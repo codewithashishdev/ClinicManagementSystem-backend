@@ -11,12 +11,13 @@ const otpGenerator = require('otp-generator');
 
 const User = db.user
 
+
 //sign-up section
 const signup = async (req, res) => {
 
     try {
         let userschema = Joi.object().keys({
-            full_name: Joi.string().alphanum().min(3).max(30).required(),
+            full_name: Joi.string().min(3).required(),
             gender: Joi.string().required(),
             phone: Joi.number().integer().min(1000000000).max(9999999999).message('Invalid mobile number').required(),
             email: Joi.string().email().required(),
@@ -31,8 +32,8 @@ const signup = async (req, res) => {
             pin: Joi.number().integer().min(111111).max(999999)
         })
         //validate req.body
+    
         const error = userschema.validate(req.body)
-        // console.log(error);
         if (error.error) {
             return res.status(400).send(
                 {
@@ -46,6 +47,7 @@ const signup = async (req, res) => {
             //bcrypt password hash
             req.body.password = await bcrypt.hash(req.body.password, 10);
             //crate user in db
+
             const user = await User.create(req.body)
             return res.status(201).send({
                 error: false,
@@ -56,9 +58,9 @@ const signup = async (req, res) => {
 
     }
     catch (error) {
-        // console.log(error)
+           console.log(error)
         res.status(500).send({
-            error: error.errors[0].message,
+            error: error,
             message: util.catch
         })
     }
@@ -66,6 +68,7 @@ const signup = async (req, res) => {
 
 //login section
 const login = async (req, res) => {
+//    console.log(req.body)
     try {
         let loginschema = Joi.object().keys({
             user_type: Joi.string().required(),
@@ -86,22 +89,22 @@ const login = async (req, res) => {
             // console.log(email);
             if (user) {
                 const cmp = await bcrypt.compare(req.body.password, user.password)
-                // console.log(cmp)
+                console.log(cmp)
                 if (cmp) {
                     // generate token
                     user.token = await GenerateToken(user)
 
-                    res.status(201).send({
-                        error: false,
-                        data: user,
-                        message: util.login,
+                    res.status(200).send({
+                        isSuccess: true,
+                        Message: util.login,
+                        Data: user,
                     })
                 }
                 else {
                     return res.status(400).send({
-                        error: true,
+                        isSuccess: false,
+                        message: util.wrongusername,
                         data: null,
-                        message: util.wrongusername
                     })
                 }
             }
@@ -225,9 +228,10 @@ const forgotPassword = async (req, res) => {
                 let mailDetails = {
                     from: "codiottest@gmail.com",
                     to: req.body.email,
-                    subject: util.subject_inemail,
-                    text:`your password is ${user.password}`
+                    subject: "ForgotPassword",
+                    text:`UserName : ${user.email}\nYour Role : ${user.user_type}\nPassword : ${user.password}`
                 };
+                console.log(mailDetails.text,mailDetails.subject)
                 mailTransporter.sendMail(mailDetails, function (err, data) {
                     if (err) {
                         // console.log(err)

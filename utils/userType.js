@@ -1,8 +1,8 @@
 module.exports = {
     Type: [
-        "doctor",
-        "staff",
-        "patient"
+        "Doctor",
+        "Staff",
+        "Patient"
     ]
     ,
     gender: [
@@ -12,8 +12,12 @@ module.exports = {
     ],
     
     payment: [
-        "card",
-        "cash",
+        "Card",
+        "Cash",
         "UPI"
+    ],
+    paymentStatus:[
+        "Yes",
+        "No"
     ]
 }

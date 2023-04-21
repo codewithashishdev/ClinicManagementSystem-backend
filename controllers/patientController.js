@@ -20,7 +20,7 @@ const dashboard = async (req, res) => {
 const bookAppointment = async (req, res) => {
     try {
         let appointmentSchema = Joi.object().keys({
-            patientID: Joi.number().required(),
+            patientID: Joi.required(),
             time: Joi.string().required(),
             date: Joi.date().required(),
             doctorID: Joi.number().required(),
@@ -56,8 +56,6 @@ const bookAppointment = async (req, res) => {
 
             } else {
                 // find time
-                // console.log(req.body)
-                // console.log(req.body.time == Appointment.time)
                 const appointment = await Appointment.findOne({
                     where:{
                         time: req.body.time
@@ -76,9 +74,7 @@ const bookAppointment = async (req, res) => {
                         message: appointmessage.appointmessage
                     })
                 }
-
             }
-
         }
     }
     catch (error) {
@@ -104,7 +100,7 @@ const updateAppointment = async (req, res) => {
         }
         else {
             let appointmentSchema = Joi.object().keys({
-                patientID: Joi.number().required(),
+                patientID:Joi.number.required(),
                 time: Joi.string().required(),
                 date: Joi.date().required(),
                 doctorID: Joi.number().required(),
@@ -176,39 +172,21 @@ const updateAppointment = async (req, res) => {
         res.status(500).send(_const.catch)
     }
 }
+
+//appointment List in this api kinjal ma'am changes
 const appointmentHistroy = async (req, res) => {
     try {
-        let appointhischema = Joi.object().keys({
-            patientId: Joi.number().required()
-        })
-        const error = appointhischema.validate(req.body).error
-        if (error) {
-            return res.status(400).send(
-                {
-                    error: true,
-                    data: null,
-                    message: error.details[0].message
-                })
-        }
-        else {
-            console.log('hello')
-            const appoint = await Appointment.findAll({
-                where: { patientId: req.body.patientId },
-                raw: true
+        const appointment = await Appointment.findAll()
+        if(!appointment){
+            return res.status(404).send({
+                error : true,
+                data:null
+              })
+        }else{
+            return res.status(200).send({
+                error: false,
+                data : appointment
             })
-            if (appoint) {
-                return res.status(200).send({
-                    error: false,
-                    data: appoint,
-                    message: appointmessage.allhistroy,
-                })
-            } else {
-                return res.status(404).send({
-                    error: true,
-                    data: null,
-                    message: appointmessage.appointnotexist
-                })
-            }
         }
 
     } catch (error) {
@@ -241,13 +219,12 @@ const viewFeedback = async (req, res) => {
         }
     } catch (error) {
         console.log(error)
+        
         res.status(500).send(_const.catch)
     }
 }
-
 const viewBill = async (req, res) => {
     try {
-
         let billId = req.params.billId
         if (billId) {
             let appointhischema = Joi.object().keys({
@@ -260,7 +237,7 @@ const viewBill = async (req, res) => {
                     data: null,
                     message: error.details[0].message
                 })
-            } else {
+            }else {
                 const bill = await Bill.findOne({
                     where: {
                         patientId: req.body.patientId

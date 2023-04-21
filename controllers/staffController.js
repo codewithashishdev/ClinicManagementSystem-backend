@@ -255,33 +255,25 @@ const createbill = async (req, res) => {
             Numberofunit: Joi.number(),
             Amount: Joi.number().required(),
             TotalAmount: Joi.number().required(),
-            Payment_type: Joi.number().required(),
-            payment_status: Joi.boolean().required()
+            Payment_type: Joi.string().required(),
+            payment_status: Joi.string().required()
         })
-        console.log('in try')
-        //validate schema and also 
-        const  error  = await billSchema.validate(req.body).error
-        console.log(error)
-        if (error) {
-            console.log('inside if')
-            return res.status(400).send(
-                {
-                    error: true,
-                    data: null,
-                    message: error.details[0].message
-                }
-            )
-        } else {
-            console.log('inside else')
-            console.log(req.body)
+        const error = billSchema.validate(req.body).error
+        if(error){
+            return res.status(400).send({
+                iscreated: false,
+                data: null
+            })
+        }else{
             const bill = await Bill.create(req.body)
             console.log(bill)
             return res.status(201).send({
+                message: "bill created successfully ",
                 error: false,
-                data: bill,
-                message: "bill created"
+                data: bill
             })
         }
+   
     } catch (error) {
         console.log(error)
         res.status(500).send(error)
@@ -289,31 +281,16 @@ const createbill = async (req, res) => {
 }
 const BillHistroy = async (req, res) => {
     try {
-       console.log("this1")
-        let billSchema = Joi.object().keys({
-            patientID: req.body.patientID
-        })
-        //validate schema and also 
-        const error = billSchema.validate(req.body).error
-        console.log("this")
-        if (error) {
-            return res.status(400).send(
-                {
-                    error: true,
-                    data: null,
-                    message: error.details[0].message
-                }
-            )
-        } else {
-            const bill = await Bill.findAll({
-                where:{
-                    patientID: req.body.patientID
-                }
+        const bill = await Bill.findAll()
+        if(!bill){
+            return res.status(400).send({
+                error: true,
+                data: null,
             })
-            return res.status(201).send({
+        }else{
+            return res.status(200).send({
                 error: false,
                 data: bill,
-                message: "bill histroy"
             })
         }
     } catch (error) {
@@ -329,9 +306,8 @@ const BillDetail = async (req, res) => {
         if (!billId) {
             return res.status(400).send({
                 error: true,
-                message: " this bill id missing"
+                message: "this bill id missing"
             })
-
         } else {
             let appointhischema = Joi.object().keys({
                 patientID: Joi.number().required()
@@ -346,7 +322,7 @@ const BillDetail = async (req, res) => {
             } else {
                 const bill = await Bill.findOne({
                     where: {
-                        patientID: req.body.patientID
+                     BillID: req.params.billID
                     },
                     raw: true
                 })
@@ -357,7 +333,6 @@ const BillDetail = async (req, res) => {
                 })
             }
         }
-
     } catch (error) {
         console.log(error)
         res.status(500).send({
@@ -373,7 +348,6 @@ const BillStatus = async (req, res) => {
                 error: true,
                 message: " this bill id missing"
             })
-
         } else {
             let billSchema = Joi.object().keys({
                 patientID: Joi.number().required(),
@@ -400,16 +374,13 @@ const BillStatus = async (req, res) => {
                     message: "patient's bill status"
                 })
             }
-
         }
-
     } catch (error) {
         console.log(error)
         res.status(500).send({
             message: 'internal error'
         })
     }
-
 }
 
 module.exports = {

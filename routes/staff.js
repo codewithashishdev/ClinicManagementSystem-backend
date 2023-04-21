@@ -12,7 +12,7 @@ router.post('/patient/appoitnment',staffcontroller.bookAppointment) //yes
 router.put('/patient/appoitnment/:appId',staffcontroller.updateAppointment)//yes
 
 //View patient appoitnment history
-router.post('/appoitment/list',staffcontroller.viewappointment)//yes
+router.get('/appoitment/list',staffcontroller.viewappointment)//yes
 
 //View patient appoitnment detail
 router.get('/patient/appoitnment/:appId',staffcontroller.patientAppointment)
@@ -20,7 +20,7 @@ router.get('/patient/appoitnment/:appId',staffcontroller.patientAppointment)
 //create bill
 router.post('/patient/bill',staffcontroller.createbill)
 
-//View patient bill history
+//View patient bill list
 router.get('/bill/list',staffcontroller.BillHistroy)
 
 //View patient bill detail

@@ -16,11 +16,10 @@ router.post('/patient/appoitnment',patientController.bookAppointment);
 router.put('/patient/appoitnment/:appId',patientController.updateAppointment);
 
 //appointment histroy
-router.post('/appoitment/list', patientController.appointmentHistroy);
+router.get('/appoitment/list', patientController.appointmentHistroy);
 
 //view checkup feedback
 router.get('/patient/checkup-feedback/:appId',patientController.viewFeedback);
-
 
 //view appointment bill
 router.get('/bill/:billId',patientController.viewBill); 

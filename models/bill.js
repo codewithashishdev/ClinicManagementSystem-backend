@@ -44,7 +44,8 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         payment_status:{
-            type: DataTypes.BOOLEAN,
+            type: DataTypes.ENUM,
+            values:userType.paymentStatus,
             allowNull: false
         } 
      })

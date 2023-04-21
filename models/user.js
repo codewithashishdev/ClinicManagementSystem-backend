@@ -52,7 +52,6 @@ module.exports = (sequelize, DataTypes) => {
 
         address_line_2: {
             type: DataTypes.STRING,
-            allowNull: false
         },
 
         landmark: {

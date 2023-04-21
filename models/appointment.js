@@ -5,6 +5,8 @@ module.exports = (sequelize, DataTypes) => {
         patientID:{
             type: DataTypes.INTEGER,
             primaryKey: true,
+            autoincrement :true,
+            allowNull: false
         },
         time: {
             type: DataTypes.TIME,

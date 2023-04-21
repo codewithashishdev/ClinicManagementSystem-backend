@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const autoController = require('../controllers/authController')
 const authentication = require('../middleware/anthentication')
+const cors = require('cors')
 
 //ligin APi's
-
 
 //sign up
 router.post('/user/sign-up',autoController.signup)

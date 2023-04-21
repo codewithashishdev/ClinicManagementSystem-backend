@@ -33,6 +33,7 @@ const db = {}
 db.Sequelize = Sequelize
 db.sequelize = sequelize
 
+
 db.user = require('./user')(sequelize,DataTypes)
 db.appointment = require('./appointment')(sequelize,DataTypes)
 db.feedback = require('./feedback')(sequelize,DataTypes)

@@ -1,2 +1,0 @@
-# ClinicManagementSystem
-Intenship project

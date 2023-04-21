@@ -122,7 +122,7 @@ const login = async (req, res) => {
         res.status(500).send(util.catch)
     }
 }
-
+//change password
 const changePassword = async (req, res) => {
     try {
         let change_password = Joi.object().keys({

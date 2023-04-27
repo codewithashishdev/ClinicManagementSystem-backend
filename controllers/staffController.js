@@ -303,36 +303,26 @@ const BillDetail = async (req, res) => {
     //view bill same
     try {
         let billId = req.params.billId
-        if (!billId) {
-            return res.status(400).send({
-                error: true,
-                message: "this bill id missing"
-            })
-        } else {
-            let appointhischema = Joi.object().keys({
-                patientID: Joi.number().required()
-            })
-            const error = appointhischema.validate(req.body).error
-            if (error) {
-                return res.status(400).send({
-                    error: true,
-                    data: null,
-                    message: error.details[0].message
-                })
-            } else {
-                const bill = await Bill.findOne({
-                    where: {
-                     BillID: req.params.billID
-                    },
-                    raw: true
-                })
-                res.status(200).send({
-                    error: false,
-                    data: bill,
-                    message: "patient's bill"
-                })
+        console.log(billId)
+           console.log('ifhos')
+            const bill = await Bill.findOne({
+            where:{
+                patientID : billId
             }
-        }
+            })
+                console.log(bill)
+               
+                if(!bill){
+                    return res.status(400).send({
+                        data: null,
+                        message: 'this is not right id'
+                    })
+                }else{
+                    return res.status(200).send({
+                        data: bill,
+                        message:'bill detail'
+                    })
+                }
     } catch (error) {
         console.log(error)
         res.status(500).send({

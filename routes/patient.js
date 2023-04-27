@@ -1,11 +1,11 @@
 var express = require('express');
-const authentication = require('../middleware/anthentication')
 const patientController = require('../controllers/patientController');
+const authentication = require('../middleware/anthentication')
 var router = express.Router();
 
 //patient APi's
 
-
+//authentication.Authentication
 //Dashboard
 router.get('/patient/dashboard',patientController.dashboard);
 

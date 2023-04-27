@@ -1,9 +1,6 @@
 const db = require("../models");
-const { GenerateToken } = require('../middleware/anthentication')
-const sequelize = require('sequelize')
-const bcrypt = require('bcrypt')
+const { Op } = require("sequelize")
 const Joi = require('joi')
-const jwt = require("jsonwebtoken");
 const { appointment, feedback } = require("../models");
 const userType = require("../utils/userType");
 const _const = require("../utils/const");
@@ -20,16 +17,12 @@ const dashboard = async (req, res) => {
 const bookAppointment = async (req, res) => {
     try {
         let appointmentSchema = Joi.object().keys({
-            patientID: Joi.required(),
+            patientID: Joi.number().required(),
             time: Joi.string().required(),
             date: Joi.date().required(),
             doctorID: Joi.number().required(),
-            create_by: Joi.string().required(),
-            disease: Joi.string().required(),
-            is_active: Joi.boolean().required(),
-            is_deleted: Joi.boolean().required()
+            disease: Joi.string().required()
         })
-        console.log('this')
         //appointment validation
         const error = appointmentSchema.validate(req.body).error
         if (error) {
@@ -41,41 +34,36 @@ const bookAppointment = async (req, res) => {
                 }
             );
         } else {
-            //find appointment
-            const appointment = await Appointment.findOne({
-                where: { patientID: req.body.patientID },
-                raw: true
+            console.log('in else')
+            //date time doctor
+            const appointment =await Appointment.findOne({
+                where: {
+                    [Op.and]: [
+                        { doctorID: req.body.doctorID },
+                        { time: req.body.time },
+                        { date: req.body.date }
+                    ]
+                }
             })
-
+            console.log(appointment)
             if (appointment) {
                 return res.status(401).send({
                     error: true,
                     data: null,
                     message: appointmessage.allreadyappoint
                 })
-
             } else {
-                // find time
-                const appointment = await Appointment.findOne({
-                    where:{
-                        time: req.body.time
-                    }
+
+                const appointment = await Appointment.create(req.body)
+                return res.status(201).send({
+                    error: false,
+                    data: appointment,
+                    message: appointmessage.appointmessage
                 })
-                if (appointment) {
-                    return res.status(401).send({
-                        error: true,
-                        message: "appointment time is same"
-                    })
-                } else {
-                    const appointment = await Appointment.create(req.body)
-                    return res.status(201).send({
-                        error: false,
-                        data: appointment,
-                        message: appointmessage.appointmessage
-                    })
-                }
+
             }
         }
+      
     }
     catch (error) {
         console.log(error)
@@ -100,17 +88,15 @@ const updateAppointment = async (req, res) => {
         }
         else {
             let appointmentSchema = Joi.object().keys({
-                patientID:Joi.number.required(),
+                patientID: Joi.number.required(),
                 time: Joi.string().required(),
                 date: Joi.date().required(),
                 doctorID: Joi.number().required(),
-                create_by: Joi.string().required(),
                 disease: Joi.string().required(),
                 is_active: Joi.boolean().required(),
                 is_deleted: Joi.boolean().required()
             })
-
-
+            
             //validate schema and also 
             const error = appointmentSchema.validate(req.body).error
             if (error) {
@@ -130,11 +116,11 @@ const updateAppointment = async (req, res) => {
                 console.log('this2')
                 if (appoint) {
                     //find appointment
-                const appointment = await Appointment.findOne({
-                    where:{
-                        time: req.body.time
-                    }
-                })
+                    const appointment = await Appointment.findOne({
+                        where: {
+                            time: req.body.time
+                        }
+                    })
 
                     //to do add condition to check if time slot available or not
                     if (appointment) {
@@ -177,15 +163,15 @@ const updateAppointment = async (req, res) => {
 const appointmentHistroy = async (req, res) => {
     try {
         const appointment = await Appointment.findAll()
-        if(!appointment){
+        if (!appointment) {
             return res.status(404).send({
-                error : true,
-                data:null
-              })
-        }else{
+                error: true,
+                data: null
+            })
+        } else {
             return res.status(200).send({
                 error: false,
-                data : appointment
+                data: appointment
             })
         }
 
@@ -219,7 +205,7 @@ const viewFeedback = async (req, res) => {
         }
     } catch (error) {
         console.log(error)
-        
+
         res.status(500).send(_const.catch)
     }
 }
@@ -228,16 +214,16 @@ const viewBill = async (req, res) => {
         let billId = req.params.billId
         if (billId) {
             let appointhischema = Joi.object().keys({
-                patientId: Joi.number().required()
+                billId: Joi.number().required()
             })
-            const error = appointhischema.validate(req.body).error
+            const error = appointhischema.validate(req.params).error
             if (error) {
                 return res.send(400).send({
                     error: true,
                     data: null,
                     message: error.details[0].message
                 })
-            }else {
+            } else {
                 const bill = await Bill.findOne({
                     where: {
                         patientId: req.body.patientId
@@ -275,3 +261,45 @@ module.exports = {
     appointmentHistroy,
     viewBill
 }
+
+
+
+
+
+  // {
+        //     console.log('this1')
+        //     //already in database
+        //     const appointment = await Appointment.findOne({
+        //         where: { patientID: req.body.patientID },
+        //         raw: true
+        //     })
+
+        //     if (appointment) {
+        //         return res.status(401).send({
+        //             error: true,
+        //             data: null,
+        //             message: appointmessage.allreadyappoint
+        //         })
+
+        //     } else {
+        //         // find time
+        //         const appointment = await Appointment.findOne({
+        //             where:{
+        //                 time: req.body.time
+        //             }
+        //         })
+        //         if (appointment) {
+        //             return res.status(401).send({
+        //                 error: true,
+        //                 message: "appointment time is same"
+        //             })
+        //         } else {
+        //             const appointment = await Appointment.create(req.body)
+        //             return res.status(201).send({
+        //                 error: false,
+        //                 data: appointment,
+        //                 message: appointmessage.appointmessage
+        //             })
+        //         }
+        //     }
+        // }
